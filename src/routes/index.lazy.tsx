@@ -7,7 +7,7 @@ export const Route = createLazyFileRoute("/")({
 });
 
 function Index() {
-  const { counter } = useAppSelector((state) => state);
+  const counter = useAppSelector((state) => state.counter);
   const dispatch = useAppDispatch();
 
   return (
