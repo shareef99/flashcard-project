@@ -11,7 +11,7 @@ function Index() {
   const dispatch = useAppDispatch();
 
   return (
-    <div className="p-2">
+    <div className="">
       <h1 className="text-red-600">Welcome Home!</h1>
       <div className="flex gap-4">
         <button onClick={() => dispatch(increment())}>Increment</button>
