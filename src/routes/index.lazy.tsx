@@ -1,10 +1,12 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { MdOutlineImage } from "react-icons/md";
 import { IoMdTrash } from "react-icons/io";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAppDispatch } from "../redux/store";
+import { addFlashcard } from "../redux/flashcardSlice";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -13,10 +15,12 @@ export const Route = createLazyFileRoute("/")({
 const schema = z.object({
   groupName: z.string().min(1, "Required"),
   groupDescription: z.string().min(1, "Required"),
+  groupImage: z.string().min(1, "Required"),
   terms: z.array(
     z.object({
       name: z.string().min(1, "Required"),
       description: z.string().min(1, "Required"),
+      image: z.string().min(1, "Required"),
     }),
   ),
 });
@@ -24,11 +28,15 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 function Index() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate({ from: "/" });
+
   // Form
   const {
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
@@ -39,20 +47,18 @@ function Index() {
     mode: "all",
     resolver: zodResolver(schema),
   });
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "terms",
-  });
+  const { fields, append, remove } = useFieldArray({ control, name: "terms" });
 
   // Functions
   const submitHandler: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
+    dispatch(addFlashcard(data));
+    navigate({ from: "/", to: "/show" });
   };
 
   return (
     <section>
       <form
-        onSubmit={handleSubmit(submitHandler)}
+        onSubmit={handleSubmit(submitHandler, (err) => console.log(err))}
         className="space-y-8 text-gray-500"
       >
         <div className="flex flex-col gap-4 rounded-lg bg-white p-4">
@@ -72,16 +78,40 @@ function Index() {
                 </span>
               )}
             </div>
-            <button
-              className={twMerge(
-                "mt-8 flex items-center gap-1 rounded-md border-2 border-solid border-blue-500 px-4 py-1.5 text-blue-500 transition-all duration-300 ease-in",
-                "hover:bg-blue-500 hover:text-white",
-                "focus:border-blue-500 focus:bg-blue-500 focus:text-white focus:ring-0",
+            <div>
+              <button
+                className={twMerge(
+                  "mt-8 flex items-center gap-1 rounded-md border-2 border-solid border-blue-500 px-4 py-1.5 text-blue-500 transition-all duration-300 ease-in",
+                  "hover:bg-blue-500 hover:text-white",
+                  "focus:border-blue-500 focus:bg-blue-500 focus:text-white focus:ring-0",
+                )}
+                type="button"
+                onClick={() => {
+                  const input = document.createElement("input");
+                  input.type = "file";
+                  input.accept = "image/*";
+                  input.multiple = false;
+
+                  input.onchange = () => {
+                    const files = input.files;
+                    const file = files?.[0];
+                    if (!file) return;
+                    const imageUrl = window.URL.createObjectURL(file);
+                    setValue("groupImage", imageUrl);
+                  };
+
+                  input.click();
+                }}
+              >
+                <MdOutlineImage size="1.5rem" />
+                <span className="text-lg font-semibold">Upload</span>
+              </button>
+              {errors.groupImage?.message && (
+                <span className="text-red-500">
+                  {errors.groupImage?.message}
+                </span>
               )}
-            >
-              <MdOutlineImage size="1.5rem" />
-              <span className="text-lg font-semibold">Upload</span>
-            </button>
+            </div>
           </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="group-description">Enter Group Description</label>
@@ -129,19 +159,53 @@ function Index() {
                     required: true,
                   })}
                 />
-              </div>
-              <button
-                className={twMerge(
-                  "mt-8 flex items-center gap-1 rounded-md border-2 border-solid border-blue-500 px-4 py-1.5 text-blue-500 transition-all duration-300 ease-in",
-                  "hover:bg-blue-500 hover:text-white",
-                  "focus:border-blue-500 focus:bg-blue-500 focus:text-white focus:ring-0",
+                {errors.terms?.[index]?.description?.message && (
+                  <span className="text-red-500">
+                    {errors.terms?.[index]?.description?.message}
+                  </span>
                 )}
-              >
-                <MdOutlineImage size="1.5rem" />
-                <span className="text-lg font-semibold">Upload</span>
-              </button>
+              </div>
+              <div>
+                <button
+                  className={twMerge(
+                    "mt-8 flex items-center gap-1 rounded-md border-2 border-solid border-blue-500 px-4 py-1.5 text-blue-500 transition-all duration-300 ease-in",
+                    "hover:bg-blue-500 hover:text-white",
+                    "focus:border-blue-500 focus:bg-blue-500 focus:text-white focus:ring-0",
+                  )}
+                  type="button"
+                  onClick={() => {
+                    const input = document.createElement("input");
+                    input.type = "file";
+                    input.accept = "image/*";
+                    input.multiple = false;
+
+                    input.onchange = () => {
+                      const files = input.files;
+                      const file = files?.[0];
+                      if (!file) return;
+                      const imageUrl = window.URL.createObjectURL(file);
+                      setValue(`terms.${index}.image`, imageUrl);
+                    };
+
+                    input.click();
+                  }}
+                >
+                  <MdOutlineImage size="1.5rem" />
+                  <span className="text-lg font-semibold">Upload</span>
+                </button>
+                {errors.terms?.[index]?.image?.message && (
+                  <span className="text-red-500">
+                    {errors.terms?.[index]?.image?.message}
+                  </span>
+                )}
+              </div>
+
               {fields.length > 1 && (
-                <button onClick={() => remove(index)} className="mt-8">
+                <button
+                  onClick={() => remove(index)}
+                  className="mt-8"
+                  type="button"
+                >
                   <IoMdTrash size="2rem" className="text-red-500" />
                 </button>
               )}
@@ -149,7 +213,7 @@ function Index() {
           ))}
           <button
             className="w-fit text-start font-bold text-blue-500"
-            onClick={() => append({ name: "", description: "" })}
+            onClick={() => append({ name: "", description: "", image: "" })}
             type="button"
           >
             Add More+

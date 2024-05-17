@@ -1,15 +1,15 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { useSelector, useDispatch } from "react-redux";
-import counterReducer from "./counterSlice";
+import flashcardReducer from "./flashcardSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const persistedReducer = persistReducer(
   {
-    key: "root",
+    key: "flashcard-project",
     storage,
   },
-  combineReducers({ counter: counterReducer })
+  combineReducers({ flashcards: flashcardReducer }),
 );
 
 export const store = configureStore({
