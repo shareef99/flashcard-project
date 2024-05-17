@@ -1,23 +1,167 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useAppDispatch, useAppSelector } from "../redux/store";
-import { decrement, increment } from "../redux/counterSlice";
+import { MdOutlineImage } from "react-icons/md";
+import { IoMdTrash } from "react-icons/io";
+import { twMerge } from "tailwind-merge";
+import { z } from "zod";
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
 });
 
+const schema = z.object({
+  groupName: z.string().min(1, "Required"),
+  groupDescription: z.string().min(1, "Required"),
+  terms: z.array(
+    z.object({
+      name: z.string().min(1, "Required"),
+      description: z.string().min(1, "Required"),
+    }),
+  ),
+});
+
+type FormValues = z.infer<typeof schema>;
+
 function Index() {
-  const counter = useAppSelector((state) => state.counter);
-  const dispatch = useAppDispatch();
+  // Form
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
+      groupName: "",
+      groupDescription: "",
+      terms: [{ name: "", description: "" }],
+    },
+    mode: "all",
+    resolver: zodResolver(schema),
+  });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "terms",
+  });
+
+  // Functions
+  const submitHandler: SubmitHandler<FormValues> = (data) => {
+    console.log(data);
+  };
 
   return (
-    <div className="">
-      <h1 className="text-red-600">Welcome Home!</h1>
-      <div className="flex gap-4">
-        <button onClick={() => dispatch(increment())}>Increment</button>
-        <p>{counter.value}</p>
-        <button onClick={() => dispatch(decrement())}>Decrement</button>
-      </div>
-    </div>
+    <section>
+      <form
+        onSubmit={handleSubmit(submitHandler)}
+        className="space-y-8 text-gray-500"
+      >
+        <div className="flex flex-col gap-4 rounded-lg bg-white p-4">
+          <div className="flex items-start gap-2">
+            <div className="flex flex-grow flex-col gap-2">
+              <label htmlFor="group-name">Enter Group Name</label>
+              <input
+                type="text"
+                id="group-name"
+                className="rounded-md border-2 border-solid border-gray-400 placeholder:mx-2 hover:border-gray-500 focus:border-gray-500 focus:ring-0"
+                placeholder="Enter Group Name"
+                {...register("groupName", { required: true })}
+              />
+              {errors.groupName?.message && (
+                <span className="text-red-500">
+                  {errors.groupName?.message}
+                </span>
+              )}
+            </div>
+            <button
+              className={twMerge(
+                "mt-8 flex items-center gap-1 rounded-md border-2 border-solid border-blue-500 px-4 py-1.5 text-blue-500 transition-all duration-300 ease-in",
+                "hover:bg-blue-500 hover:text-white",
+                "focus:border-blue-500 focus:bg-blue-500 focus:text-white focus:ring-0",
+              )}
+            >
+              <MdOutlineImage size="1.5rem" />
+              <span className="text-lg font-semibold">Upload</span>
+            </button>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="group-description">Enter Group Description</label>
+            <textarea
+              id="group-description"
+              className="rounded-md border-2 border-solid border-gray-400 placeholder:mx-2 hover:border-gray-500 focus:border-gray-500 focus:ring-0"
+              placeholder="Enter Group Description"
+              {...register("groupDescription", { required: true })}
+            />
+            {errors.groupDescription?.message && (
+              <span className="text-red-500">
+                {errors.groupDescription?.message}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-col gap-4 rounded-lg bg-white p-4">
+          {fields.map((field, index) => (
+            <div key={field.id} className="flex items-start gap-4">
+              <div className="my-auto flex size-9 items-center justify-center rounded-full bg-red-500 text-white">
+                {index + 1}
+              </div>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="name">Enter Term Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  className="rounded-md border-2 border-solid border-gray-400 placeholder:mx-2 hover:border-gray-500 focus:border-gray-500 focus:ring-0"
+                  placeholder="Enter Term Name"
+                  {...register(`terms.${index}.name`, { required: true })}
+                />
+                {errors.terms?.[index]?.name?.message && (
+                  <span className="text-red-500">
+                    {errors.terms?.[index]?.name?.message}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-grow flex-col gap-2">
+                <label htmlFor="description">Enter Group description</label>
+                <textarea
+                  id="description"
+                  className="rounded-md border-2 border-solid border-gray-400 placeholder:mx-2 hover:border-gray-500 focus:border-gray-500 focus:ring-0"
+                  placeholder="Enter Group Description"
+                  {...register(`terms.${index}.description`, {
+                    required: true,
+                  })}
+                />
+              </div>
+              <button
+                className={twMerge(
+                  "mt-8 flex items-center gap-1 rounded-md border-2 border-solid border-blue-500 px-4 py-1.5 text-blue-500 transition-all duration-300 ease-in",
+                  "hover:bg-blue-500 hover:text-white",
+                  "focus:border-blue-500 focus:bg-blue-500 focus:text-white focus:ring-0",
+                )}
+              >
+                <MdOutlineImage size="1.5rem" />
+                <span className="text-lg font-semibold">Upload</span>
+              </button>
+              {fields.length > 1 && (
+                <button onClick={() => remove(index)} className="mt-8">
+                  <IoMdTrash size="2rem" className="text-red-500" />
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            className="w-fit text-start font-bold text-blue-500"
+            onClick={() => append({ name: "", description: "" })}
+            type="button"
+          >
+            Add More+
+          </button>
+        </div>
+        <button
+          type="submit"
+          className="mx-auto flex rounded-md bg-red-500 px-16 py-2 font-semibold text-white hover:bg-red-600"
+        >
+          Submit
+        </button>
+      </form>
+    </section>
   );
 }
