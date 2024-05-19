@@ -1,10 +1,19 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useAppSelector } from "../../../redux/store";
 import { twMerge } from "tailwind-merge";
-import { useState } from "react";
-import { MdShare, MdDownload, MdPrint } from "react-icons/md";
+import { useRef, useState } from "react";
+import {
+  MdEmail,
+  MdShare,
+  MdDownload,
+  MdPrint,
+  MdCopyAll,
+} from "react-icons/md";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { FaFacebook, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { FaLinkedin } from "react-icons/fa6";
+import { IoMdClose } from "react-icons/io";
 
 export const Route = createLazyFileRoute("/show/$id/")({
   component: Page,
@@ -18,6 +27,9 @@ function Page() {
   // State
   // Index of the selected term
   const [selectedTerm, setSelectedTerm] = useState<number>(0);
+
+  // Ref
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   if (!flashcard) {
     return <div>Flashcard not found</div>;
@@ -103,6 +115,7 @@ function Page() {
               "transition-all duration-300 ease-in",
               "hover:bg-red-500 hover:text-white",
             )}
+            onClick={() => dialogRef.current?.showModal()}
           >
             <MdShare size="1.5rem" /> <span className="text-lg">Share</span>
           </button>
@@ -123,11 +136,83 @@ function Page() {
               "transition-all duration-300 ease-in",
               "hover:bg-red-500 hover:text-white",
             )}
+            onClick={() => {
+              window.open(pdf.output("bloburl"), "_blank");
+            }}
           >
             <MdPrint size="1.5rem" /> <span className="text-lg">Print</span>
           </button>
         </div>
       </div>
+
+      <dialog
+        ref={dialogRef}
+        onClick={(event) => {
+          event.target.addEventListener("click", (e) => {
+            // We checked by logging the value of the id, it is a string
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const id = e.target.id;
+            if (id === "dialog") {
+              dialogRef.current?.close();
+            }
+          });
+        }}
+        className="rounded-lg bg-white shadow"
+        id="dialog"
+      >
+        <div id="dialog-content" className="p-4">
+          <div>
+            <h1 className="text-xl font-bold">Share</h1>
+            <IoMdClose
+              onClick={() => dialogRef.current?.close()}
+              className="absolute right-2 top-2 cursor-pointer text-3xl text-red-500 transition-all duration-200 ease-linear hover:rotate-90"
+            />
+            <div className="flex flex-row items-center gap-2 p-3">
+              <p className="flex w-full justify-between gap-2 rounded-lg border-2 p-2">
+                <span className="w-fit truncate">{window.location.href}</span>
+              </p>
+              <MdCopyAll
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  alert("Copied to clipboard");
+                }}
+                className="cursor-pointer text-3xl hover:text-red-500"
+              />
+            </div>
+            <div className="relative mx-auto flex h-1/2 w-11/12 justify-between gap-5 overflow-hidden p-3 transition-all duration-500 ease-linear md:w-10/12">
+              <FaWhatsapp
+                onClick={() =>
+                  window.open("https://web.whatsapp.com/", "_blank")
+                }
+                className="cursor-pointer rounded-full text-4xl text-green-500"
+              />
+              <FaFacebook
+                onClick={() =>
+                  window.open("https://www.facebook.com/", "_blank")
+                }
+                className="cursor-pointer rounded-full text-4xl text-blue-500"
+              />
+              <FaLinkedin
+                onClick={() =>
+                  window.open("https://www.linkedin.com/", "_blank")
+                }
+                className="cursor-pointer rounded-full text-4xl text-blue-500"
+              />
+              <FaTwitter
+                onClick={() => window.open("https://twitter.com/", "_blank")}
+                className="cursor-pointer rounded-full text-4xl text-blue-500"
+              />
+              <MdEmail
+                onClick={() =>
+                  window.open("https://gmail.google.com", "_blank")
+                }
+                className="cursor-pointer rounded-full text-4xl text-red-500"
+              />
+            </div>
+          </div>
+        </div>
+      </dialog>
     </section>
   );
 }
