@@ -21,7 +21,7 @@ export default function Header() {
           to="/show"
           className={twMerge(
             "w-36 text-lg font-semibold text-gray-500 hover:text-red-600",
-            pathname === "/show" && "text-red-600",
+            pathname.includes("/show") && "text-red-600",
           )}
         >
           Show Flashcard
@@ -31,9 +31,9 @@ export default function Header() {
         <div className="mt-2 h-1 w-full rounded-full bg-slate-200"></div>
         <div
           className={twMerge(
-            "absolute top-0 h-1 w-36 rounded-full bg-red-600",
-            pathname === "/" && "left-0",
-            pathname === "/show" && "left-[170px]",
+            "absolute top-0 h-1 w-36 rounded-full",
+            pathname === "/" && "left-0 bg-red-600",
+            pathname.includes("/show") && "left-[170px] bg-red-600",
           )}
         ></div>
       </div>

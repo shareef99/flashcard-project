@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { IoMdClose } from "react-icons/io";
 import { removeFlashcard } from "../../redux/flashcardSlice";
 
-export const Route = createLazyFileRoute("/show")({
+export const Route = createLazyFileRoute("/show/")({
   component: Page,
 });
 
@@ -30,7 +30,7 @@ function Page() {
 
   return (
     <section>
-      <div className="mt-12 grid grid-cols-3 gap-4">
+      <div className="mt-12 grid grid-cols-3 gap-4 pb-8">
         {flashcards.map((flashcard) => (
           <div
             className="relative rounded-lg bg-white p-4 shadow-md"
@@ -53,9 +53,10 @@ function Page() {
             <div className="mt-16 flex flex-col items-center">
               <h3 className="text-lg font-semibold">{flashcard.groupName}</h3>
               <p>{flashcard.groupDescription}</p>
+              <p>{flashcard.terms.length} cards</p>
               <Link
-                to="/show"
-                from="/show"
+                to="/show/$id"
+                params={{ id: flashcard.id.toString() }}
                 className="mt-2 rounded-md border-2 border-red-500 px-4 py-2 font-medium text-red-500"
               >
                 View Card

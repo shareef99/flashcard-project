@@ -59,7 +59,7 @@ function Index() {
     <section>
       <form
         onSubmit={handleSubmit(submitHandler, (err) => console.log(err))}
-        className="space-y-8 text-gray-500"
+        className="flex flex-col gap-8 text-gray-500"
       >
         <div className="flex flex-col gap-4 rounded-lg bg-white p-4">
           <div className="flex items-start gap-2">
@@ -199,7 +199,6 @@ function Index() {
                   </span>
                 )}
               </div>
-
               {fields.length > 1 && (
                 <button
                   onClick={() => remove(index)}
@@ -221,7 +220,7 @@ function Index() {
         </div>
         <button
           type="submit"
-          className="mx-auto flex rounded-md bg-red-500 px-16 py-2 font-semibold text-white hover:bg-red-600"
+          className="mx-auto mb-4 flex rounded-md bg-red-500 px-16 py-2 font-semibold text-white hover:bg-red-600"
         >
           Submit
         </button>

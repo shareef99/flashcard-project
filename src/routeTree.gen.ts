@@ -17,15 +17,11 @@ import { Route as LayoutImport } from './routes/_layout'
 
 // Create Virtual Routes
 
-const ShowRouteLazyImport = createFileRoute('/show')()
 const IndexLazyImport = createFileRoute('/')()
+const ShowIndexLazyImport = createFileRoute('/show/')()
+const ShowIdIndexLazyImport = createFileRoute('/show/$id/')()
 
 // Create/Update Routes
-
-const ShowRouteLazyRoute = ShowRouteLazyImport.update({
-  path: '/show',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/show/route.lazy').then((d) => d.Route))
 
 const LayoutRoute = LayoutImport.update({
   id: '/_layout',
@@ -36,6 +32,18 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const ShowIndexLazyRoute = ShowIndexLazyImport.update({
+  path: '/show/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/show/index.lazy').then((d) => d.Route))
+
+const ShowIdIndexLazyRoute = ShowIdIndexLazyImport.update({
+  path: '/show/$id/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/show/$id/index.lazy').then((d) => d.Route),
+)
 
 // Populate the FileRoutesByPath interface
 
@@ -55,11 +63,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
-    '/show': {
-      id: '/show'
+    '/show/': {
+      id: '/show/'
       path: '/show'
       fullPath: '/show'
-      preLoaderRoute: typeof ShowRouteLazyImport
+      preLoaderRoute: typeof ShowIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/show/$id/': {
+      id: '/show/$id/'
+      path: '/show/$id'
+      fullPath: '/show/$id'
+      preLoaderRoute: typeof ShowIdIndexLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -69,7 +84,8 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
-  ShowRouteLazyRoute,
+  ShowIndexLazyRoute,
+  ShowIdIndexLazyRoute,
 })
 
 /* prettier-ignore-end */
