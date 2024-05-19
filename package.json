@@ -13,6 +13,8 @@
     "@hookform/resolvers": "^3.4.0",
     "@reduxjs/toolkit": "^2.2.5",
     "@tanstack/react-router": "^1.32.12",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.4",
