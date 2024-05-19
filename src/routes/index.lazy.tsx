@@ -51,7 +51,7 @@ function Index() {
 
   // Functions
   const submitHandler: SubmitHandler<FormValues> = (data) => {
-    dispatch(addFlashcard(data));
+    dispatch(addFlashcard({ id: Math.random(), ...data }));
     navigate({ from: "/", to: "/show" });
   };
 
