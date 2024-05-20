@@ -96,8 +96,19 @@ function Index() {
                     const files = input.files;
                     const file = files?.[0];
                     if (!file) return;
-                    const imageUrl = window.URL.createObjectURL(file);
-                    setValue("groupImage", imageUrl);
+
+                    if (file.size > 1024 * 1024) {
+                      alert("File must be less than 1 MB");
+                      return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      if (!reader.result) return;
+                      const base64 = reader.result as string;
+                      setValue("groupImage", base64);
+                    };
+                    reader.readAsDataURL(file);
                   };
 
                   input.click();
@@ -183,8 +194,14 @@ function Index() {
                       const files = input.files;
                       const file = files?.[0];
                       if (!file) return;
-                      const imageUrl = window.URL.createObjectURL(file);
-                      setValue(`terms.${index}.image`, imageUrl);
+
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        if (!reader.result) return;
+                        const base64 = reader.result as string;
+                        setValue(`terms.${index}.image`, base64);
+                      };
+                      reader.readAsDataURL(file);
                     };
 
                     input.click();

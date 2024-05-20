@@ -30,7 +30,7 @@ function Page() {
 
   return (
     <section>
-      <div className="mt-12 grid grid-cols-3 gap-4 pb-8">
+      <div className="mt-12 grid grid-cols-3 gap-x-4 gap-y-20 pb-8">
         {flashcards.map((flashcard) => (
           <div
             className="relative rounded-lg bg-white p-4 shadow-md"
