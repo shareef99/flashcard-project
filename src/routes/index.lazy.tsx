@@ -141,11 +141,14 @@ function Index() {
         </div>
         <div className="flex flex-col gap-4 rounded-lg bg-white p-4">
           {fields.map((field, index) => (
-            <div key={field.id} className="flex items-start gap-4">
+            <div
+              key={field.id}
+              className="flex flex-col items-start gap-4 md:flex-row"
+            >
               <div className="my-auto flex size-9 items-center justify-center rounded-full bg-red-500 text-white">
                 {index + 1}
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex w-full flex-col gap-2 md:w-fit">
                 <label htmlFor="name">Enter Term Name</label>
                 <input
                   type="text"
@@ -160,7 +163,7 @@ function Index() {
                   </span>
                 )}
               </div>
-              <div className="flex flex-grow flex-col gap-2">
+              <div className="flex w-full flex-grow flex-col gap-2 md:w-fit">
                 <label htmlFor="description">Enter Group description</label>
                 <textarea
                   id="description"
@@ -179,7 +182,7 @@ function Index() {
               <div>
                 <button
                   className={twMerge(
-                    "mt-8 flex items-center gap-1 rounded-md border-2 border-solid border-blue-500 px-4 py-1.5 text-blue-500 transition-all duration-300 ease-in",
+                    "flex items-center gap-1 rounded-md border-2 border-solid border-blue-500 px-4 py-1.5 text-blue-500 transition-all duration-300 ease-in md:mt-8",
                     "hover:bg-blue-500 hover:text-white",
                     "focus:border-blue-500 focus:bg-blue-500 focus:text-white focus:ring-0",
                   )}
@@ -219,7 +222,7 @@ function Index() {
               {fields.length > 1 && (
                 <button
                   onClick={() => remove(index)}
-                  className="mt-8"
+                  className="md:mt-8"
                   type="button"
                 >
                   <IoMdTrash size="2rem" className="text-red-500" />

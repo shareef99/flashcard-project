@@ -77,7 +77,7 @@ function Page() {
         <h1 className="text-xl font-semibold">{flashcard.groupName}</h1>
         <p>{flashcard.groupDescription}</p>
       </div>
-      <div className="mt-4 grid grid-cols-[200px_1fr_200px] gap-8">
+      <div className="mt-4 grid grid-cols-1 gap-8 md:grid-cols-[100px_1fr_100px] md:gap-4 lg:grid-cols-[200px_1fr_200px]">
         <div className="rounded-md bg-white p-4">
           <span className="font-bold text-gray-500">Flashcards</span>
           <div>
@@ -96,7 +96,7 @@ function Page() {
             ))}
           </div>
         </div>
-        <div className="flex gap-4 rounded-md bg-white p-4">
+        <div className="flex flex-col gap-4 rounded-md bg-white p-4 md:flex-row">
           <div>
             <img
               src={flashcard.terms[selectedTerm].image}
@@ -108,7 +108,7 @@ function Page() {
             <span>{flashcard.terms[selectedTerm].description}</span>
           </div>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="mb-8 flex flex-col gap-4 md:mb-0">
           <button
             className={twMerge(
               "flex items-center justify-center gap-2 rounded-md bg-white px-4 py-2 font-bold text-black",
@@ -144,7 +144,6 @@ function Page() {
           </button>
         </div>
       </div>
-
       <dialog
         ref={dialogRef}
         onClick={(event) => {
